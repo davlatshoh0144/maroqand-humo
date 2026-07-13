@@ -1,0 +1,11 @@
+.env
+.env.*
+.next
+node_modules
+download
+upload
+output
+agent-ctx
+db/*.db
+*.log
+*.tsbuildinfo
