@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String
+  role          String   @default("guest") // guest, free, paid, teacher, admin
+  avatar        String?
+  city          String?
+  bio           String?
+  phone         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollments      Enrollment[]
+  notes            Note[]
+  quizAttempts     QuizAttempt[]
+  certificates     Certificate[]
+  submissions      AssignmentSubmission[]
+  discussions      Discussion[]
+  discussionReplies DiscussionReply[]
+  progress         LessonProgress[]
+  auditLogs        AuditLog[]
+}
+
+model Course {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  subtitle      String
+  description   String
+  category      String
+  image         String
+  difficulty    String   // beginner, intermediate, advanced
+  durationHours Int
+  instructorId  String
+  instructorName String
+  instructorBio  String?
+  instructorAvatar String?
+  enrollmentCount Int    @default(0)
+  certificateAvailable Boolean @default(true)
+  learningOutcomes String // JSON array
+  prerequisites  String  // JSON array
+  commonMistakes String? // JSON array
+  lastUpdated   DateTime @default(now())
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+  quizzes      Quiz[]
+  assignments  Assignment[]
+  certificates Certificate[]
+  discussions  Discussion[]
+}
+
+model Lesson {
+  id            String   @id @default(cuid())
+  courseId      String
+  orderIndex    Int
+  title         String
+  description   String
+  content       String?  // Markdown content
+  videoUrl      String?
+  durationMin   Int      @default(0)
+  isFree        Boolean  @default(false)
+  isRequired    Boolean  @default(true)
+  checklist     String?  // JSON array of checklist items
+  resources     String?  // JSON array of resource links
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress     LessonProgress[]
+  discussions  Discussion[]
+}
+
+model Enrollment {
+  id            String   @id @default(cuid())
+  userId        String
+  courseId      String
+  status        String   @default("active") // active, completed, dropped
+  enrolledAt    DateTime @default(now())
+  completedAt   DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  lessonId      String
+  completed     Boolean  @default(false)
+  checklistData String?  // JSON object of checklist item states
+  completedAt   DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Quiz {
+  id            String   @id @default(cuid())
+  courseId      String
+  lessonId      String?
+  title         String
+  questions     String   // JSON array of questions
+  passingScore  Int      @default(70)
+  createdAt     DateTime @default(now())
+
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  attempts     QuizAttempt[]
+}
+
+model QuizAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  quizId        String
+  answers       String   // JSON object of answers
+  score         Int
+  passed        Boolean
+  attemptedAt   DateTime @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz         Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id            String   @id @default(cuid())
+  userId        String
+  courseId      String
+  credentialId  String   @unique
+  score         Int
+  issuedAt      DateTime @default(now())
+  verified      Boolean  @default(true)
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Note {
+  id            String   @id @default(cuid())
+  userId        String
+  lessonId      String?
+  courseId      String?
+  content       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Assignment {
+  id            String   @id @default(cuid())
+  courseId      String
+  lessonId      String?
+  title         String
+  description   String
+  scenario      String
+  rubric        String   // JSON array
+  type          String   // email, calculation, review, checklist, scenario
+  difficulty    String   @default("intermediate")
+  createdAt     DateTime @default(now())
+
+  course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions  AssignmentSubmission[]
+}
+
+model AssignmentSubmission {
+  id            String   @id @default(cuid())
+  userId        String
+  assignmentId  String
+  response      String
+  score         Int?
+  feedback      String?
+  status        String   @default("submitted") // submitted, reviewed, graded
+  submittedAt   DateTime @default(now())
+  reviewedAt    DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+}
+
+model Discussion {
+  id            String   @id @default(cuid())
+  courseId      String?
+  lessonId      String?
+  userId        String
+  title         String
+  content       String
+  isPinned      Boolean  @default(false)
+  isAnnouncement Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course       Course?   @relation(fields: [courseId], references: [id])
+  lesson       Lesson?   @relation(fields: [lessonId], references: [id])
+  replies      DiscussionReply[]
+}
+
+model DiscussionReply {
+  id            String   @id @default(cuid())
+  discussionId  String
+  userId        String
+  content       String
+  isHelpful     Boolean  @default(false)
+  isInstructor  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  action        String
+  details       String?
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  user         User?     @relation(fields: [userId], references: [id])
+}
+
+model PricingPlan {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  price         Float
+  currency      String   @default("USD")
+  interval      String   @default("month") // month, year, one_time
+  features      String   // JSON array
+  isPopular     Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}

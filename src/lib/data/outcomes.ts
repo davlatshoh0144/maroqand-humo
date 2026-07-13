@@ -1,0 +1,58 @@
+import { StudentOutcome } from '@/lib/types';
+
+export const studentOutcomes: StudentOutcome[] = [
+  {
+    id: 'outcome-001',
+    name: 'New Dispatcher',
+    city: 'Tashkent',
+    track: 'Career Track',
+    completion: 100,
+    outcome: 'Built a dispatch portfolio with load notes, broker email drafts, and interview practice materials.',
+    avatar: '/instructor-2.png',
+  },
+  {
+    id: 'outcome-002',
+    name: 'Career Student',
+    city: 'Samarkand',
+    track: 'Pro Student',
+    completion: 92,
+    outcome: 'Practiced independent dispatch workflows, including carrier intake, lane research, and professional follow-up.',
+    avatar: '/instructor-3.png',
+  },
+  {
+    id: 'outcome-003',
+    name: 'Operations Learner',
+    city: 'Almaty',
+    track: 'Career Track',
+    completion: 100,
+    outcome: 'Used fleet lessons to understand maintenance planning, driver communication, and operations checklists.',
+    avatar: '/instructor-2.png',
+  },
+  {
+    id: 'outcome-004',
+    name: 'Compliance Student',
+    city: 'Bishkek',
+    track: 'Pro Student',
+    completion: 88,
+    outcome: 'Practiced remote communication routines for time zones, broker emails, and dispatch handoff notes.',
+    avatar: '/instructor-3.png',
+  },
+  {
+    id: 'outcome-005',
+    name: 'Owner-Operator',
+    city: 'Dushanbe',
+    track: 'Career Track',
+    completion: 95,
+    outcome: 'Created study notes for HOS, documentation checks, and safety-aware dispatch decisions.',
+    avatar: '/instructor-2.png',
+  },
+  {
+    id: 'outcome-006',
+    name: 'Remote Student',
+    city: 'Namangan',
+    track: 'Pro Student',
+    completion: 100,
+    outcome: 'Built a dispatcher portfolio with scripts, lane research, and broker communication exercises.',
+    avatar: '/instructor-3.png',
+  },
+];

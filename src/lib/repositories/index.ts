@@ -1,0 +1,10 @@
+export { adminRepository } from '@/lib/repositories/admin-repository';
+export { assignmentRepository } from '@/lib/repositories/assignment-repository';
+export { authRepository } from '@/lib/repositories/auth-repository';
+export { certificateRepository } from '@/lib/repositories/certificate-repository';
+export { courseRepository } from '@/lib/repositories/course-repository';
+export { discussionRepository } from '@/lib/repositories/discussion-repository';
+export { operationsRepository } from '@/lib/repositories/operations-repository';
+export { progressRepository } from '@/lib/repositories/progress-repository';
+export { teacherRepository } from '@/lib/repositories/teacher-repository';
+export type { RepositoryResult, RepositoryError } from '@/lib/repositories/result';
