@@ -63,3 +63,5 @@ server.log
 /examples/
 /mini-services/
 /worklog.md
+
+.vercel
